@@ -2,10 +2,9 @@ package com.example.student.myproject;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -37,7 +36,6 @@ public class Activity2 extends AppCompatActivity {
         setContentView(R.layout.activity_2);
         findViews();
     }
-
     //藉由id找尋View元件使用
     private void findViews() {
         quautityTextView = (TextView) findViewById(R.id.quantity_text_view);
@@ -47,7 +45,6 @@ public class Activity2 extends AppCompatActivity {
         radioButton1 = (RadioButton) findViewById(R.id.radioButton1);
         radioButton2 = (RadioButton) findViewById(R.id.radioButton2);
     }
-
     //依點擊數判斷餐點數量
     public void getComboCount(View view) {
         switch (view.getId()) {
@@ -106,14 +103,12 @@ public class Activity2 extends AppCompatActivity {
         }
         display();
     }
-
     //+1點餐數量資訊
     private void addComboCount(int i) {
         ++mComboCount[i];
         mComboSubtotalPrice[i] = mComboCount[i] * mComboPrice[i];
         mComboName[i] = mComboCount[i] == 0 ? " " : getString(mComboNameXML[i]) + mComboCount[i] + "     " + mComboSubtotalPrice[i];
     }
-
     //-1點餐數量資訊
     private void removeComboCount(int i) {
         if (mComboCount[i] > 0) {
@@ -124,32 +119,55 @@ public class Activity2 extends AppCompatActivity {
     }
     //點餐結帳 輸出點餐清單
     public void submit(View view) {
+        if (mComboTotalPrice != 0) {
+            StringBuilder message = new StringBuilder();
+            message.append("您的訂單如下:\n\n")
+                    .append(mComboTotalName)
+                    .append("\n")
+                    .append("\n")
+                    .append("\n")
+                    .append("您的總金額為:" + " " + mComboTotalPrice + " " + "$");
 
-        StringBuilder message = new StringBuilder();
-        message.append("您的訂單如下:\n\n")
-                .append(mComboTotalName)
-                .append("\n")
-                .append("\n")
-                .append("\n")
-                .append("您的總金額為:" + " " + mComboTotalPrice + " " + "$");
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(message)
+                    .setPositiveButton("確定結帳", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(Activity2.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("返回點餐", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    }).show();
+        }else {
+            StringBuilder message = new StringBuilder();
+            message.append("您尚未點餐\n\n");
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(message)
-                .setPositiveButton("確定結帳", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(Activity2.this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                    }
-                })
-                .setNegativeButton("返回點餐", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                }).show();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(message)
+                    .setPositiveButton("回到主頁", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(Activity2.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("返回點餐", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    }).show();
+
+        }
 
     }
+    //購物袋
     private void display() {
         String bagMessage = "";
         int bagPrice = 0;
@@ -160,7 +178,6 @@ public class Activity2 extends AppCompatActivity {
             bagMessage = bagCheakBox.isChecked() == true ? getString(R.string.bag) : "";
             bagPrice = bagCheakBox.isChecked() == true ? 2 : 0;
         }
-
         mComboTotalName = mComboName[0] + mComboName[1] + mComboName[2] + mComboName[3] +
                 mComboName[4] + mComboName[5] + mComboName[6] + mComboName[7] + bagMessage;
         mComboTotalPrice = mComboSubtotalPrice[0] + mComboSubtotalPrice[1] + mComboSubtotalPrice[2] + mComboSubtotalPrice[3] +
@@ -168,7 +185,6 @@ public class Activity2 extends AppCompatActivity {
         quautityTextView.setText(mComboTotalName);
         priceTextView.setText(String.valueOf(mComboTotalPrice));
     }
-
     //取消點餐
     public void cancel(View view) {
         mComboTotalPrice = 0;
